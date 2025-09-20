@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ServerHeader } from '@/components/site-header';
 import { fetchArticlesPaginated } from '@/lib/builder-rest';
 
@@ -30,15 +31,17 @@ export default async function ArticleList() {
             <li key={item.data.url}>
               <Link href={`/article${item.data.url}`}>
                 <div className="overflow-hidden border rounded-lg shadow-md hover:shadow-lg transition">
-                  <div className="w-full h-48 bg-gray-100 overflow-hidden">
-                    <img
+                  <div className="w-full h-48 bg-gray-100 overflow-hidden relative">
+                    <Image
                       src={
                         typeof item.data.image === 'string'
                           ? item.data.image
-                          : (item.data.image as any)?.src
+                          : item.data.image?.src ?? ''
                       }
                       alt={item.data.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover"
                     />
                   </div>
                   <div className="p-4">

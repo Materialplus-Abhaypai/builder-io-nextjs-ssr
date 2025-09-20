@@ -1,9 +1,32 @@
 import { RenderBuilderContent } from '@/components/builder';
 import { ServerHeader } from '@/components/site-header';
 import { notFound } from 'next/navigation';
+import type { ComponentProps } from 'react';
+import { BuilderComponent } from '@builder.io/react';
+import Image from 'next/image';
 import { fetchArticleByUrl, fetchArticleBySlug, fetchArticleByScan, fetchAllArticleSlugs } from '@/lib/builder-rest';
 
 export const revalidate = 60;
+
+type BuilderContentProp = ComponentProps<typeof BuilderComponent>['content'];
+
+function isRecord(val: unknown): val is Record<string, unknown> {
+  return typeof val === 'object' && val !== null;
+}
+
+function getData(obj: unknown): Record<string, unknown> | null {
+  if (isRecord(obj) && 'data' in obj) {
+    const d = (obj as { data?: unknown }).data;
+    if (isRecord(d)) return d as Record<string, unknown>;
+  }
+  return null;
+}
+
+function getImageUrl(val: unknown): string | undefined {
+  if (typeof val === 'string') return val;
+  if (isRecord(val) && typeof val.src === 'string') return val.src as string;
+  return undefined;
+}
 
 export default async function ArticlePage({
   params,
@@ -21,7 +44,7 @@ export default async function ArticlePage({
     `/article/${noTrail}`,
   ];
 
-  let article: any = null;
+  let article: unknown = null;
   for (const candidate of urlCandidates) {
     article = await fetchArticleByUrl(candidate);
     if (article) break;
@@ -41,10 +64,10 @@ export default async function ArticlePage({
 
   if (!article) return notFound();
 
-  const imageUrl = typeof article?.data?.image === 'string'
-    ? article.data.image
-    : (article?.data?.image as any)?.src;
-  const publishedDate = article?.data?.date as string | undefined;
+  const data = getData(article);
+  const imageUrl = getImageUrl(data?.['image']);
+  const title = typeof data?.['title'] === 'string' ? (data?.['title'] as string) : '';
+  const publishedDate = typeof data?.['date'] === 'string' ? (data?.['date'] as string) : undefined;
 
   return (
     <>
@@ -52,14 +75,21 @@ export default async function ArticlePage({
       <main className="max-w-3xl mx-auto px-4 py-10">
         {imageUrl ? (
           <div className="mb-6 overflow-hidden rounded-lg">
-            <img src={imageUrl} alt={article.data.title} className="w-full h-auto object-cover" />
+            <Image
+              src={imageUrl}
+              alt={title}
+              width={1200}
+              height={630}
+              sizes="100vw"
+              className="w-full h-auto object-cover"
+            />
           </div>
         ) : null}
-        <h1 className="text-4xl font-bold mb-2">{article.data.title}</h1>
+        <h1 className="text-4xl font-bold mb-2">{title}</h1>
         {publishedDate ? (
           <p className="text-sm text-gray-500 mb-6">{publishedDate}</p>
         ) : null}
-        <RenderBuilderContent content={article} model="article" />
+        <RenderBuilderContent content={article as BuilderContentProp} model="article" />
       </main>
     </>
   );
