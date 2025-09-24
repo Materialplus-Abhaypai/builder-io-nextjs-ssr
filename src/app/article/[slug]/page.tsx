@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import { useParams, usePathname } from "next/navigation";
 import Image from "next/image";
 import { BuilderComponent } from "@builder.io/react";
@@ -41,6 +41,8 @@ function getTags(val: unknown): string[] {
   return [];
 }
 
+type BuilderContent = ComponentProps<typeof BuilderComponent>["content"];
+
 export default function ArticlePage() {
   const params = useParams<{ slug: string }>();
   const pathname = usePathname() || "/";
@@ -62,7 +64,7 @@ export default function ArticlePage() {
   const imageUrl = getImageUrl(data?.["image"]);
   const title = typeof data?.["title"] === "string" ? (data?.["title"] as string) : "";
   const publishedDate = typeof data?.["date"] === "string" ? (data?.["date"] as string) : undefined;
-  const tags = getTags(data?.["tag"]);
+  const tags = getTags(data?.["tags"]);
   const bodyHtml = typeof data?.["body"] === "string" ? (data?.["body"] as string) : "";
 
   // console.log("title", title);
@@ -99,7 +101,7 @@ export default function ArticlePage() {
         ) : null}
         {bodyHtml ? <div className="mb-6" dangerouslySetInnerHTML={{ __html: bodyHtml }} /> : null}
         {/* Pass content so BuilderComponent doesn't refetch */}
-        {article ? <BuilderComponent model="article" content={article as any} /> : <BuilderComponent model="article" options={{ userAttributes: { urlPath: pathname } }} />}
+        {article ? <BuilderComponent model="article" content={article as BuilderContent} /> : <BuilderComponent model="article" options={{ userAttributes: { urlPath: pathname } }} />}
       </main>
     </>
   );
