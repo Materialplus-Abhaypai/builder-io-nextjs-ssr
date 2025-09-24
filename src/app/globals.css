@@ -1,2 +1,17 @@
 @import "tailwindcss";
 
+.article-rich-text img{display:block;max-width:100%;height:auto}
+.article-rich-text figure{margin:1rem 0}
+.article-rich-text iframe{max-width:100%}
+
+/* Image/text wrap helpers inside rich text */
+.article-rich-text .align-left, .article-rich-text .image-left, .article-rich-text img.align-left, .article-rich-text img[style*="float:left"], .article-rich-text figure.align-left, .article-rich-text figure[style*="float:left"]{float:left;margin:0 1rem 1rem 0;max-width:50%}
+.article-rich-text .align-right, .article-rich-text .image-right, .article-rich-text img.align-right, .article-rich-text img[style*="float:right"], .article-rich-text figure.align-right, .article-rich-text figure[style*="float:right"]{float:right;margin:0 0 1rem 1rem;max-width:50%}
+.article-rich-text figure>img{display:block;border-radius:.25rem}
+.article-rich-text figure>figcaption{font-size:.85rem;color:#6b7280;margin-top:.5rem}
+.article-rich-text::after{content:"";display:block;clear:both}
+
+@media (max-width:640px){
+  .article-rich-text .align-left, .article-rich-text .image-left, .article-rich-text img.align-left, .article-rich-text img[style*="float:left"], .article-rich-text figure.align-left, .article-rich-text figure[style*="float:left"],
+  .article-rich-text .align-right, .article-rich-text .image-right, .article-rich-text img.align-right, .article-rich-text img[style*="float:right"], .article-rich-text figure.align-right, .article-rich-text figure[style*="float:right"]{float:none;display:block;max-width:100%;margin:0 0 1rem}
+}

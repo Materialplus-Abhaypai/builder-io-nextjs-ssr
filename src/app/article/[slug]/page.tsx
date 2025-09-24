@@ -2,9 +2,12 @@
 import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import { useParams, usePathname } from "next/navigation";
 import Image from "next/image";
-import { BuilderComponent } from "@builder.io/react";
+import dynamic from "next/dynamic";
+import BuilderInit from "@/components/builder-init";
 import { ClientHeader } from "@/components/site-header-client";
 import { getArticleByUrlOrSlug } from "@/lib/builder-client";
+
+const BuilderOnly = dynamic(() => import("@/components/builder-client-only"), { ssr: false });
 
 function isRecord(val: unknown): val is Record<string, unknown> {
   return typeof val === "object" && val !== null;
@@ -41,7 +44,7 @@ function getTags(val: unknown): string[] {
   return [];
 }
 
-type BuilderContent = ComponentProps<typeof BuilderComponent>["content"];
+type BuilderContent = ComponentProps<typeof BuilderOnly>["content"];
 
 export default function ArticlePage() {
   const params = useParams<{ slug: string }>();
@@ -64,7 +67,7 @@ export default function ArticlePage() {
   const imageUrl = getImageUrl(data?.["image"]);
   const title = typeof data?.["title"] === "string" ? (data?.["title"] as string) : "";
   const publishedDate = typeof data?.["date"] === "string" ? (data?.["date"] as string) : undefined;
-  const tags = getTags(data?.["tags"]);
+  const tags = getTags(data?.["tag"]);
   const bodyHtml = typeof data?.["body"] === "string" ? (data?.["body"] as string) : "";
 
   // console.log("title", title);
@@ -75,6 +78,7 @@ export default function ArticlePage() {
   return (
     <>
       <ClientHeader />
+      <BuilderInit />
       <main className="max-w-3xl mx-auto px-4 py-10">
         {imageUrl ? (
           <div className="mb-6 overflow-hidden rounded-lg">
@@ -99,9 +103,9 @@ export default function ArticlePage() {
             ))}
           </ul>
         ) : null}
-        {bodyHtml ? <div className="mb-6" dangerouslySetInnerHTML={{ __html: bodyHtml }} /> : null}
+        {bodyHtml ? <div className="mb-6 article-rich-text" dangerouslySetInnerHTML={{ __html: bodyHtml }} /> : null}
         {/* Pass content so BuilderComponent doesn't refetch */}
-        {article ? <BuilderComponent model="article" content={article as BuilderContent} /> : <BuilderComponent model="article" options={{ userAttributes: { urlPath: pathname } }} />}
+        {article ? <BuilderOnly model="article" content={article as BuilderContent} /> : <BuilderOnly model="article" options={{ userAttributes: { urlPath: pathname } }} />}
       </main>
     </>
   );
