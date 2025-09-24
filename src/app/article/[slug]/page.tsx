@@ -100,7 +100,6 @@ export default function ArticlePage() {
         {bodyHtml ? <div className="mb-6" dangerouslySetInnerHTML={{ __html: bodyHtml }} /> : null}
         {/* Pass content so BuilderComponent doesn't refetch */}
         {article ? <BuilderComponent model="article" content={article as any} /> : <BuilderComponent model="article" options={{ userAttributes: { urlPath: pathname } }} />}
-        Abhay
       </main>
     </>
   );
