@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { fetchNavigationLinks } from "@/lib/builder-rest";
 
 export type NavLink = { text: string; link: string };
 
@@ -19,9 +18,4 @@ export function SiteHeader({ links }: { links?: NavLink[] }) {
       </div>
     </header>
   );
-}
-
-export async function ServerHeader() {
-  const links = await fetchNavigationLinks();
-  return <SiteHeader links={links ?? []} />;
 }

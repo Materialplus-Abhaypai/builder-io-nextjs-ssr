@@ -131,7 +131,7 @@ export async function fetchArticleByScan(url: string) {
   for (const candidate of targets) {
     const arr = await builder.getAll("article", {
       options: { includeRefs: true, noTargeting: true, locale },
-      fields: "data.title,data.url,data.blocks,data.image,data.date",
+      fields: "data.title,data.url,data.blocks,data.image,data.date,data.tags,data.body",
       limit: 1,
       query: { "data.url": candidate },
     });
@@ -140,7 +140,7 @@ export async function fetchArticleByScan(url: string) {
   const all = await builder.getAll("article", {
     fetchOptions: { next: { revalidate: REVALIDATE_SECONDS } },
     options: { includeRefs: true, noTargeting: true, locale },
-    fields: "data.title,data.url,data.blocks,data.image,data.date",
+    fields: "data.title,data.url,data.blocks,data.image,data.date,data.tags,data.body",
     limit: 200,
   });
 
@@ -166,7 +166,7 @@ export async function fetchArticlesPaginated(limit: number, offset: number) {
   return builder.getAll("article", {
     options: { includeRefs: true, noTargeting: true, locale },
     omit: "data.blocks",
-    fields: "data.title,data.image,data.date,data.url",
+    fields: "data.title,data.image,data.date,data.url,data.tags",
     limit,
     offset,
   });
