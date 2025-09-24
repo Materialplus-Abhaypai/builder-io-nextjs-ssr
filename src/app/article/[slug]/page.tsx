@@ -62,7 +62,7 @@ export default function ArticlePage() {
   const imageUrl = getImageUrl(data?.["image"]);
   const title = typeof data?.["title"] === "string" ? (data?.["title"] as string) : "";
   const publishedDate = typeof data?.["date"] === "string" ? (data?.["date"] as string) : undefined;
-  const tags = getTags(data?.["tags"]);
+  const tags = getTags(data?.["tag"]);
   const bodyHtml = typeof data?.["body"] === "string" ? (data?.["body"] as string) : "";
 
   // console.log("title", title);

@@ -49,6 +49,16 @@ function normalizePath(input: string) {
 export async function getArticleByUrlOrSlug(pathOrSlug: string) {
   const { withLead, noLead } = normalizePath(pathOrSlug);
   const urlCandidates = [withLead, noLead, `/article/${noLead}`];
+
+  // 1) Resolve by urlPath like BuilderComponent does (most reliable)
+  for (const candidate of urlCandidates) {
+    const byUrl = await builder
+      .get("article", { userAttributes: { urlPath: candidate } })
+      .toPromise();
+    if (byUrl) return byUrl;
+  }
+
+  // 2) Fallback to querying data.url directly
   for (const candidate of urlCandidates) {
     const arr = await builder.getAll("article", {
       options: { includeRefs: true, noTargeting: true },
@@ -58,6 +68,8 @@ export async function getArticleByUrlOrSlug(pathOrSlug: string) {
     });
     if (arr?.[0]) return arr[0];
   }
+
+  // 3) Fallback to slug
   const slugArr = await builder.getAll("article", {
     options: { includeRefs: true, noTargeting: true },
     fields: "data.title,data.url,data.blocks,data.image,data.date,data.tags,data.body,data.slug",
@@ -66,6 +78,7 @@ export async function getArticleByUrlOrSlug(pathOrSlug: string) {
   });
   if (slugArr?.[0]) return slugArr[0];
 
+  // 4) Last resort: scan
   const all = await builder.getAll("article", {
     options: { includeRefs: true, noTargeting: true },
     fields: "data.title,data.url,data.blocks,data.image,data.date,data.tags,data.body",
