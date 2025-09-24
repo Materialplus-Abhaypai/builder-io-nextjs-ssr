@@ -1,39 +1,29 @@
 "use client";
-import { builder, Builder } from "@builder.io/react";
-import { RenderBuilderContent } from "@/components/builder";
-import { SiteHeader } from "@/components/site-header";
+import { Builder } from "@builder.io/react";
+import CardFeature from "@/components/card-feature";
 
-builder.init(process.env.NEXT_PUBLIC_BUILDER_API_KEY!);
 
-Builder.registerComponent(RenderBuilderContent, {
-  name: "RenderBuilderContent",
+Builder.registerComponent(CardFeature, {
+  name: "CardFeature",
   inputs: [
     {
-      name: "content",
-      type: "string",
-      meta: {
-        ts: "any",
-      },
+      name: "text",
+      type: "text",
       required: true,
+      helperText: "Main text content of the card",
     },
-  ],
-});
-
-Builder.registerComponent(SiteHeader, {
-  name: "SiteHeader",
-  inputs: [
     {
-      name: "links",
-      type: "list",
-      subFields: [
-        { name: "text", type: "string", required: true },
-        { name: "link", type: "url", required: true },
-      ],
-      helperText: "Optional: override links from the Section model",
+      name: "image",
+      type: "file",
+      allowedFileTypes: ["jpeg", "jpg", "png", "webp", "gif", "svg"],
+      helperText: "Optional image for the card",
+    },
+    {
+      name: "imageAlignment",
+      type: "string",
+      enum: ["left", "right"],
+      defaultValue: "left",
+      helperText: "Choose whether the image appears on the left or right on desktop",
     },
   ],
-});
-
-Builder.registerComponent(Builder, {
-  name: "Builder",
 });
