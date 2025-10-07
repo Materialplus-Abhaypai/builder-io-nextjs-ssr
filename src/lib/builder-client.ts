@@ -4,7 +4,7 @@ import { isBuilderReady } from "@/lib/builder-ready";
 
 
 export type NavLink = { text: string; link: string };
-
+export type Reference = { model: string; id: string };
 function isRecord(val: unknown): val is Record<string, unknown> {
   return typeof val === "object" && val !== null;
 }
@@ -138,4 +138,18 @@ export async function getArticlesPaginated(limit: number, offset: number, locale
     console.warn("getArticlesPaginated failed", err);
     return [];
   }
+}
+
+export async function getDataDb(meta: [{[key: string]: Reference}]): Promise<string[]> {
+  const metaDbData: string[] = [];
+  for (const metadata of meta) {
+    const values = Object.values(metadata);
+    if (values.length === 0) continue;
+    const values0 = values[0];
+    if (values0.model && values0.id) {
+      const metaDb = await builder.get(values0.model, { userAttributes: { id: values0.id }, options: { noTargeting: true } }).toPromise();
+      if (metaDb.data.name) metaDbData.push(metaDb.data.name);
+    }
+  }
+  return metaDbData;
 }
