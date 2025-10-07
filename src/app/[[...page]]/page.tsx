@@ -10,18 +10,13 @@ import { isBuilderReady } from "@/lib/builder-ready";
 import { useClientReady } from "@/lib/use-client-ready";
 import { useLocale } from "@/components/i18n-provider";
 import ArticleMain from "@/components/article-main";
+import { getData, getImageUrl } from "@/lib/content-utils";
 
 const BuilderOnly = dynamic(() => import("@/components/builder-client-only"), { ssr: false });
 
 type BuilderContent = ComponentProps<typeof BuilderOnly>["content"];
 
-interface PageProps {
-  params: {
-    page: string[];
-  };
-}
-
-export default function Page(props: PageProps) {
+export default function Page() {
   const pathname = usePathname() || "/";
   const mounted = useClientReady();
   const { locale } = useLocale();
@@ -43,7 +38,6 @@ export default function Page(props: PageProps) {
 
   if (mounted && isBuilderReady() && article) {
     // Extract article data using getData and helpers
-    const { getData, getImageUrl } = require("@/lib/content-utils");
     const data = getData(article);
     const imageUrl = getImageUrl(data?.["heroImage"]);
     const title = typeof data?.["title"] === "string" ? (data?.["title"] as string) : "Untitled";
